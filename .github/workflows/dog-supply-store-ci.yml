@@ -1,0 +1,33 @@
+name: Dog Supply Store CI
+
+on:
+  pull_request:
+    paths:
+      - "capstone/dog-supply-store/**"
+      - ".github/workflows/dog-supply-store-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "capstone/dog-supply-store/**"
+      - ".github/workflows/dog-supply-store-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: capstone/dog-supply-store
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile application and tests
+        run: python -m compileall -q dog_supply_store tests
+      - name: Run standard-library unit and HTTP smoke tests
+        run: python -m unittest discover -s tests -v
